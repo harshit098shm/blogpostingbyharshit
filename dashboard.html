@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Blog App</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f4f4f9; }
+        .card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        input, textarea { display: block; width: 100%; margin-bottom: 10px; padding: 8px; }
+        button { padding: 10px 15px; background: #28a745; color: white; border: none; cursor: pointer; }
+        .logout { background: #dc3545; float: right; }
+    </style>
+</head>
+<body>
+    <button class="logout" onclick="logout()">Logout</button>
+    <h1>User Dashboard</h1>
+
+    <div class="card">
+        <h3>Create New Blog</h3>
+        <input type="text" id="title" placeholder="Blog Title">
+        <textarea id="content" placeholder="Blog Content"></textarea>
+        <button onclick="createBlog()">Publish Blog</button>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('Unauthorized! Please login first.');
+            window.location.href = '/index.html';
+        }
+
+        async function createBlog() {
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+            const res = await fetch('/api/blogs', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ title, content })
+            });
+            if (res.ok) {
+                alert('Blog created successfully!');
+                document.getElementById('title').value = '';
+                document.getElementById('content').value = '';
+            } else {
+                alert('Failed to create blog');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = '/index.html';
+        }
+    </script>
+</body>
+</html>
